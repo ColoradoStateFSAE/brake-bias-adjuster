@@ -1,0 +1,63 @@
+{
+  "build": {
+    "core": "earlephilhower",
+    "extra_flags": "-DPIO_FRAMEWORK_ARDUINO_ENABLE_CDC -DUSBD_VID=0x239A -DUSBD_PID=0x80F1 -DUSBD_MANUFACTURER_STRING=\"Adafruit\" -DUSBD_PRODUCT_STRING=\"Feather RP2040 CAN\"",
+    "f_cpu": "133000000L",
+    "f_flash": "20000000L",
+    "ldscript": "rp2040_1.0.0.ld",
+    "mcu": "rp2040",
+    "variant": "rp2040"
+  },
+  "connectivity": [
+    "can",
+    "wifi"
+  ],
+  "debug": {
+    "onboard_tools": [
+      "picoprobe"
+    ],
+    "openocd_config": "interface/cmsis-dap.cfg",
+    "svd_path": "RP2040.svd"
+  },
+  "frameworks": [
+    "arduino"
+  ],
+  "name": "Adafruit Feather RP2040 CAN",
+  "upload": {
+    "maximum_ram_size": 262144,
+    "maximum_size": 16777216,
+    "protocol": "picotool",
+    "protocols": [
+      "picotool",
+      "uf2"
+    ]
+  },
+  "url": "https://www.adafruit.com/product/5717",
+  "vendor": "Adafruit",
+  "pins": {
+    "D0": "0",
+    "D1": "1",
+    "D2": "2", 
+    "D3": "3",
+    "D4": "4",
+    "D5": "5",
+    "D6": "6",
+    "D7": "7",
+    "D8": "8",
+    "D9": "9",
+    "D10": "10",
+    "D11": "11",
+    "D12": "12",
+    "D13": "13",
+    "A0": "26",
+    "A1": "27", 
+    "A2": "28",
+    "A3": "29",
+    "A4": "30",
+    "A5": "31",
+    "LED": "13",
+    "NEOPIXEL": "16",
+    "CAN_TX": "20",
+    "CAN_RX": "21"
+  }
+}
