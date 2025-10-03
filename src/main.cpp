@@ -3,10 +3,10 @@
 #include <map>
 #include <EEPROM.h>
 
-struct LastPosition {
+struct SavedData {
     uint32_t signature;
     float position;
-    uint32_t crc;
+    //uint32_t crc;
 };
 
 constexpr int CAN_RECEIVE = 20;
@@ -17,22 +17,31 @@ constexpr int MOTOR_BACKWARDS = 4;
 constexpr int MAX_POT_VALUE = 4095; 
 
 constexpr uint32_t SIGNATURE = 0xB1A5B1A5;
-constexpr int EEPROM_SIZE = sizeof(LastPosition);
+constexpr int EEPROM_SIZE = sizeof(savedData);
 constexpr int EEPROM_ADDRESS = 0;
 
 
 int potValue;
 
-LastPosition lastPosition;
+SavedData savedData;
+
+//TODO: add CRC and front-end indicator of success or failure
+void loadsavedData() {
+    EEPROM.begin(EEPROM_SIZE);
+    EEPROM.get(EEPROM_ADDRESS, savedData);
+
+    if (savedData.signature == SIGNATURE) {
+        potValue = savedData.position;
+    };
+};
 
 //TODO: add CRC
-void loadLastPosition() {
-    EEPROM.begin(EEPROM_SIZE);
-    EEPROM.get(EEPROM_ADDRESS, lastPosition);
+void savePosition() {
+    savedData.signature = SIGNATURE;
+    savedData.position = potValue;
+    //savedData.crc = 
 
-    if (lastPosition.signature == SIGNATURE) {
-        potValue = lastPosition.position;
-    };
+    EEPROM.put(EEPROM_ADDRESS, savedData)
 };
 
 int readPotValue() {
@@ -56,7 +65,7 @@ void increaseRear() {
 };
 
 void setup() {
-    loadLastPosition();
+    loadsavedData();
 };
 
 void loop() {
