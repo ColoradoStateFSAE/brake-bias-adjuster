@@ -41,7 +41,7 @@ void savePosition() {
     savedData.position = potValue;
     //savedData.crc = 
 
-    EEPROM.put(EEPROM_ADDRESS, savedData)
+    EEPROM.put(EEPROM_ADDRESS, savedData);
 };
 
 int readPotValue() {
