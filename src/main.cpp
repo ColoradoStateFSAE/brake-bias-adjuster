@@ -10,6 +10,12 @@ struct SavedData {
     //uint32_t crc;
 };
 
+struct BiasRatio {
+    float percentFront;
+    float percentRear;
+    bool valid;
+};
+
 constexpr int CAN_RECEIVE = 20;
 constexpr int CAN_TRANSMIT = 21;
 constexpr int POT= 26;
@@ -24,6 +30,10 @@ constexpr int EEPROM_ADDRESS = 0;
 SavedData savedData;
 
 int potValue;
+
+int readPotValue() {
+    return analogRead(POT);
+};
 
 //TODO: add CRC and front-end indicator of success or failure
 void loadsavedData() {
@@ -45,12 +55,6 @@ void savePosition() {
 };
 
 
-int readPotValue() {
-    return analogRead(POT);
-};
-
-
-
 /* 
  * for brake pressure: map all values (pairing front and back) over a period of time 
  * and then select the highest value pair, since the ratio is most consistent when max
@@ -58,7 +62,7 @@ int readPotValue() {
  */
 
 //0x36B 20hz TX 0-1 Unsigned kPa y = x - 101.3
-double readFrontBrakePressure() {
+float readFrontBrakePressure() {
     int packetSize = CAN.parsePacket();
     if (packetSize == R3_GROUP08_LENGTH && CAN.packetId() == R3_GROUP08_FRAME_ID && !CAN.packetExtended()) {
         uint8_t buf[8];
@@ -66,7 +70,7 @@ double readFrontBrakePressure() {
 
         r3_group08_t message;
         if (r3_group08_unpack(message, buf, 8) == 0) {
-            double kpa = r3_group08_brake_pressure_front_decode(message.brake_pressure_front);
+            float kpa = r3_group08_brake_pressure_front_decode(message.brake_pressure_front);
             return kpa;
         };
     };
@@ -74,7 +78,7 @@ double readFrontBrakePressure() {
 };
 
 //0x476 20hz TX 0-1 Unsigned kPa y = x-101.3
-double readRearBrakePressure() {
+float readRearBrakePressure() {
     int packetSize = CAN.parsePacket();
     if (packetSize == R3_GROUP45_LENGTH && CAN.packetId == R3_GROUP45_FRAME_ID && !CAN.packetExtended) {
         uint8_t buf[8];
@@ -82,23 +86,31 @@ double readRearBrakePressure() {
 
         r3_group45_t message;
         if (r3_group45_unpack(message, buf, 8) == 0) {
-            double kpa = r3_group45_brake_pressure_rear_decode(message);
+            float kpa = r3_group45_brake_pressure_rear_decode(message);
             return kpa;
         };
     };
     return -1.0;
 };
 
-std::map mapPressures() {
 
-}
+BiasRatio calculateRatio() {
+    BiasRatio bias;
 
-int findMaxValues() {
+    float pressureFront = readFrontBrakePressure();
+    float pressureRear = readRearBrakePressure();
 
-};
-
-double calculateRatio() {
-
+    if (pressureFront > 0 && pressureRear > 0) {
+        float total = pressureFront + pressureRear;
+        bias.percentFront = (pressureFront / total) * 100f;
+        bias.percentRear = (pressureRear / total) * 100f;
+        bias.valid = true;
+    } else {
+        bias.percentFront = 0;
+        bias.percentRear = 0;
+        bias.valid = false;
+    }
+    return bias;
 };
 
 void increaseFront() {
