@@ -1,1 +1,1 @@
-IMPORTANT: you must copy the adafruit_feather_rp2040_can.json into your ./.platformio/boards directory since PIO does not have built-in support for this board
+copy the adafruit_feather_rp2040_can.json into your ./.platformio/boards directory since PIO does not have built-in support for this board
