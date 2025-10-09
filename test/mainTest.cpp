@@ -1,0 +1,11 @@
+#ifdef PIO_UNIT_TESTING
+
+#include <gtest/gtest.h>
+#include "CanControllerTest.h"
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+
+#endif
